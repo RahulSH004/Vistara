@@ -8,7 +8,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "migrate": "psql -h localhost -U hotel_booking_platform -d hotel_booking_platform -f src/db/migrations/000_init_schema_migrations.sql"
+    "migrate": "psql -h localhost -U hotel_booking_platform -d hotel_booking_platform -f src/db/migrations/005_update_rooms.sql"
   },
   "keywords": [],
   "author": "",

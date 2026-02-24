@@ -1,0 +1,13 @@
+DROP TABLE rooms;
+DROP TYPE room_type;
+
+
+ALTER TABLE users
+ADD COLUMN updated_at TIMESTAMP DEFAULT now();
+
+ALTER TABLE hotels
+ADD COLUMN updated_at TIMESTAMP DEFAULT now();
+
+ALTER TABLE rooms
+ADD COLUMN updated_at TIMESTAMP DEFAULT now();
+
