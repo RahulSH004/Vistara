@@ -1,8 +1,6 @@
 import { sql } from "drizzle-orm";
 import { pgTable, pgEnum } from "drizzle-orm/pg-core";
 import * as t from "drizzle-orm/pg-core";
-import { table } from "node:console";
-import { id } from "zod/locales";
 
 export const rolesEnum = pgEnum("roles", ["customer", "admin"]);
 
@@ -49,12 +47,17 @@ export const rooms = pgTable(
     {
     id: t.uuid("id").primaryKey().defaultRandom(),
     hotel_id: t.uuid("hotel_id").references(() => hotels.id).notNull(),
-    room_number: t.varchar({length: 20}).notNull().unique(),
+    room_number: t.varchar({length: 20}).notNull(),
     room_type: t.varchar({length: 50}).notNull().references(() => room_types.name),
     price_per_night: t.decimal("price_per_night", { precision: 10, scale: 2 }).notNull(),
     is_available: t.boolean("is_available").default(true),
     created_at: t.timestamp("created_at").defaultNow(),
     updated_at: t.timestamp("updated_at").defaultNow(),
+    },
+    (table) => {
+        return [
+            t.unique().on(table.hotel_id, table.room_number)
+        ];
     }
 )
 
@@ -92,7 +95,7 @@ export const reviews = pgTable(
         user_id: t.uuid("user_id").references(() => users.id).notNull(),
         hotel_id: t.uuid("hotel_id").references(() => hotels.id).notNull(),
         booking_id: t.uuid("booking_id").references(() => bookings.id).notNull(),
-        rating: t.integer("rating").notNull(),
+        rating: t.decimal("rating", { precision: 2, scale: 1 }).default("0.0").notNull(),
         comment: t.text("comment"),
         created_at: t.timestamp("created_at").defaultNow().notNull(),
     },
