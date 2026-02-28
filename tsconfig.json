@@ -33,12 +33,16 @@
     // "noPropertyAccessFromIndexSignature": true,
 
     // Recommended Options
+    
     "strict": true,
-    "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": false,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+  },
+  "exclude": [
+    "drizzle.config.ts",
+    "node_modules"
+  ]
 }
