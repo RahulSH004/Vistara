@@ -5,6 +5,7 @@ import type { LoginUserInput, RegisterUserInput } from "./types.js";
 import { db } from "../../db/connection.js";
 import { refreshTokens, users } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
+import { ca } from 'zod/locales';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 const REFRESH_TOKEN = process.env.REFRESH_SECRET as string;
@@ -52,12 +53,8 @@ export async function registerUser(data: RegisterUserInput){
         }
         const tokens = await generateAccessToken(newUser.id);
 
-            const token = jwt.sign(
-                {userId: newUser?.id},
-                secret,
-                {expiresIn: "7d"}
-            );
-            return { user: newUser, token };
+        return { user: newUser, tokens };
+
     }catch(error){
         if(error instanceof Error){
             throw new Error(error.message);
@@ -84,14 +81,9 @@ export async function loginUser(data: LoginUserInput){
             throw new Error("Invalid email or password");
         }
 
-        const secret = process.env.JWT_SECRET as string;
+        const tokens = await generateAccessToken(user.id);
         
-        const token = jwt.sign(
-            {userId: user.id},
-            secret,
-            {expiresIn: "7d"}
-        );
-        return { user: {name: user.name, email: user.email}, token};
+        return { user: {name: user.name, email: user.email}, ...tokens};
     }
     catch(error){
         if(error instanceof Error){
@@ -101,12 +93,36 @@ export async function loginUser(data: LoginUserInput){
         }
     }
 }
-export async function logoutuser(data: {token: string}){
-    const {token} = data;
-    const secret = process.env.JWT_SECRET as string;
+export async function logoutuser(data: {refreshtoken: string}){
+    const {refreshtoken} = data;
+    let  payload: {userId : string};
     try{
-        const payload = jwt.verify(token, secret) as {userId: number};
-    }catch(error){
-        throw new Error("Invalid token");
+        payload = jwt.verify(refreshtoken, REFRESH_TOKEN) as {userId: string};
+        await db.delete(refreshTokens).where(eq(refreshTokens.token, refreshtoken));
+    }
+    catch(error){
+        throw new Error("Logout issue failed");
+    }
+}
+
+export async function refreshAccessToken(data: {refreshtoken: string}){
+    const {refreshtoken} = data;
+    let payload: {userId: string};
+    try{
+        payload = jwt.verify(refreshtoken, REFRESH_TOKEN) as {userId: string};
+        const [stored]= await db
+            .select()
+            .from(refreshTokens)
+            .where(eq(refreshTokens.token, refreshtoken))
+            .limit(1);
+        if(!stored){
+            throw new Error("Refresh token revoked or expired");
+        }
+        await db.delete(refreshTokens).where(eq(refreshTokens.token, refreshtoken));
+        const tokens = await generateAccessToken(payload.userId);
+        return tokens;
+    }
+    catch(error){
+        throw new Error("Failed to refresh access token");
     }
 }
