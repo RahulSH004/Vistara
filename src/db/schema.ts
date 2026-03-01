@@ -108,3 +108,10 @@ export const reviews = pgTable(
         ];
     }
 )
+export const refreshTokens = pgTable("refresh_tokens", {
+  id:        t.serial("id").primaryKey(),
+  token:     t.text("token").notNull().unique(),
+  userId:    t.integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  expiresAt: t.timestamp("expires_at").notNull(),
+  createdAt: t.timestamp("created_at").defaultNow(),
+});

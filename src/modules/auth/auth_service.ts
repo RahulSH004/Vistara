@@ -87,3 +87,12 @@ export async function loginUser(data: LoginUserInput){
         }
     }
 }
+export async function logoutuser(data: {token: string}){
+    const {token} = data;
+    const secret = process.env.JWT_SECRET as string;
+    try{
+        const payload = jwt.verify(token, secret) as {userId: number};
+    }catch(error){
+        throw new Error("Invalid token");
+    }
+}
