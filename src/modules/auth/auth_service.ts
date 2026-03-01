@@ -5,7 +5,6 @@ import type { LoginUserInput, RegisterUserInput } from "./types.js";
 import { db } from "../../db/connection.js";
 import { refreshTokens, users } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
-import { ca } from 'zod/locales';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 const REFRESH_TOKEN = process.env.REFRESH_SECRET as string;
