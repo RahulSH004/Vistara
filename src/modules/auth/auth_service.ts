@@ -21,7 +21,7 @@ async function generateAccessToken(userId: string) {
 }
 
 export async function registerUser(data: RegisterUserInput){
-    const {name, email, password, phone} = data
+    const {name, email, password, phone, role} = data
     try {
         //check if user already exists
         const [existingUser] = await db
@@ -40,6 +40,7 @@ export async function registerUser(data: RegisterUserInput){
                 name,
                 email,
                 password_hash: hashedPassword,
+                role,
                 phone,
             })
             .returning({
