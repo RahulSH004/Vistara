@@ -1,10 +1,13 @@
 import 'dotenv/config';
 import  jwt  from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import type { LoginUserInput, RegisterUserInput } from "./types.js";
+import { registerUserSchema, loginUserSchema } from "./types.js";
 import { db } from "../../db/connection.js";
 import { refreshTokens, users } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
+import { z } from "zod";
+import { AppError } from "./auth_error.js";
+
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 const REFRESH_TOKEN = process.env.REFRESH_SECRET as string;
@@ -20,8 +23,12 @@ async function generateAccessToken(userId: string) {
     return {accesstoken, refreshtoken};
 }
 
-export async function registerUser(data: RegisterUserInput){
-    const {name, email, password, phone, role} = data
+export async function registerUser(data: z.infer<typeof registerUserSchema>){
+    const parsedData = registerUserSchema.safeParse(data);
+    if(!parsedData.success){
+        throw new AppError("INVALID_REQUEST", 400)
+    }
+    const {name, email, password, phone, role} = parsedData.data;
     try {
         //check if user already exists
         const [existingUser] = await db
@@ -30,16 +37,16 @@ export async function registerUser(data: RegisterUserInput){
             .where(eq(users.email, email))
             .limit(1);
         if(existingUser){
-            throw new Error("User already exists");
+            throw new AppError("EMAIL_ALREADY_EXISTS", 400);
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-
+        
         const [newUser] = await db
             .insert(users)
             .values({
                 name,
                 email,
-                password_hash: hashedPassword,
+                password: hashedPassword,
                 role,
                 phone,
             })
@@ -47,8 +54,11 @@ export async function registerUser(data: RegisterUserInput){
                 id: users.id,
                 name: users.name,
                 email: users.email,
+                role: users.role,
+                phone: users.phone,
             });
         if(!newUser){
+            
             throw new Error("Failed to create user");
         }
         const tokens = await generateAccessToken(newUser.id);
@@ -64,8 +74,12 @@ export async function registerUser(data: RegisterUserInput){
     }
 }
 
-export async function loginUser(data: LoginUserInput){
-    const {email, password} = data;
+export async function loginUser(data: z.infer<typeof loginUserSchema>){
+    const parsedData = loginUserSchema.safeParse(data);
+    if(!parsedData.success){
+        throw new Error(parsedData.error.message);
+    }
+    const {email, password} = parsedData.data;
 
     try{
         const [user] = await db
@@ -76,14 +90,22 @@ export async function loginUser(data: LoginUserInput){
         if(!user){
             throw new Error("Invalid email or password");
         }
-        const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+        const isPasswordValid = await bcrypt.compare(password, user.password);
         if(!isPasswordValid){
             throw new Error("Invalid email or password");
         }
 
         const tokens = await generateAccessToken(user.id);
         
-        return { user: {name: user.name, email: user.email}, ...tokens};
+        return {
+            user: {
+                id: user.id,
+                name: user.name, 
+                email: user.email,
+                role: user.role
+            },
+             ...tokens
+            };
     }
     catch(error){
         if(error instanceof Error){
