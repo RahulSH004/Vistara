@@ -6,7 +6,7 @@ import { db } from "../../db/connection.js";
 import { refreshTokens, users } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { AppError } from "./auth_error.js";
+import { ApiError } from '../../utils/ApiError.js';
 
 
 const  ACCESS_TOKEN = process.env. ACCESS_TOKEN_SECRET as string;
@@ -26,7 +26,7 @@ async function generateAccessToken(userId: string) {
 export async function registerUser(data: z.infer<typeof registerUserSchema>){
     const parsedData = registerUserSchema.safeParse(data);
     if(!parsedData.success){
-        throw new AppError("INVALID_REQUEST", 400)
+        throw new ApiError(400,"INVALID_REQUEST")
     }
     const {name, email, password, phone, role} = parsedData.data;
     try {
@@ -37,7 +37,7 @@ export async function registerUser(data: z.infer<typeof registerUserSchema>){
             .where(eq(users.email, email))
             .limit(1);
         if(existingUser){
-            throw new AppError("EMAIL_ALREADY_EXISTS", 400);
+            throw new ApiError(400,"EMAIL_ALREADY_EXISTS");
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         
@@ -126,6 +126,7 @@ export async function logoutuser(data: {refreshtoken: string}){
         throw new Error("Logout issue failed");
     }
 }
+
 
 export async function refreshAccessToken(data: {refreshtoken: string}){
     const {refreshtoken} = data;
