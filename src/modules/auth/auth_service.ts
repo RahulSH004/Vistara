@@ -9,11 +9,11 @@ import { z } from "zod";
 import { AppError } from "./auth_error.js";
 
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
-const REFRESH_TOKEN = process.env.REFRESH_SECRET as string;
+const  ACCESS_TOKEN = process.env. ACCESS_TOKEN_SECRET as string;
+const  REFRESH_TOKEN = process.env.  REFRESH_TOKEN_SECRET as string;
 
 async function generateAccessToken(userId: string) {
-    const accesstoken = jwt.sign({userId}, JWT_SECRET, {expiresIn: "30m"});
+    const accesstoken = jwt.sign({userId},  ACCESS_TOKEN, {expiresIn: "30m"});
     const refreshtoken = jwt.sign({userId}, REFRESH_TOKEN, {expiresIn: "7d"});
     await db.insert(refreshTokens).values({
         token: refreshtoken,
