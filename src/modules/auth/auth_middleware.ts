@@ -38,7 +38,7 @@ export const authmiddleware = async (req: Request, res: Response, nxt: NextFunct
         nxt();
         
     } catch (error) {
-        throw new ApiError(401,"Invalid access token")
+        nxt(new ApiError(401,"Invalid access token"))
         
     }
 }
