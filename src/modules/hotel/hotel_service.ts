@@ -38,7 +38,7 @@ export async function createHotel(data: z.infer <typeof createhotelschema>, user
                 updated_at: hotels.updated_at,
             });
         if(!newHotel){
-            throw new ApiError(400, "FAILED_TO_CREATE_HOTEL");
+            throw new ApiError(401, "FAILED_TO_CREATE_HOTEL");
         }
         return new ApiResponse(newHotel, null);
     } catch (error) {

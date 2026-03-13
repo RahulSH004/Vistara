@@ -45,7 +45,7 @@ export const room_types = pgTable(
 export const rooms = pgTable(
     "rooms",
     {
-    id: t.uuid("id").primaryKey().defaultRandom(),
+    room_id: t.uuid("id").primaryKey().defaultRandom(),
     hotel_id: t.uuid("hotel_id").references(() => hotels.id).notNull(),
     room_number: t.varchar({length: 20}).notNull(),
     room_type: t.varchar({length: 50}).notNull().references(() => room_types.name),
@@ -66,9 +66,9 @@ export const statusEnum = pgEnum("booking_status", ["pending", "confirmed", "can
 export const bookings = pgTable(
     "bookings",
     {
-    id: t.uuid("id").primaryKey().defaultRandom(),
+    booking_id: t.uuid("id").primaryKey().defaultRandom(),
     user_id: t.uuid("user_id").references(() => users.id).notNull(),
-    room_id: t.uuid("room_id").references(() => rooms.id).notNull(),
+    room_id: t.uuid("room_id").references(() => rooms.room_id).notNull(),
     hotel_id: t.uuid("hotel_id").references(() => hotels.id).notNull(),
     guests: t.integer("guests").notNull(),
     check_in_date: t.date("check_in_date").notNull(),
@@ -94,7 +94,7 @@ export const reviews = pgTable(
         id: t.uuid("id").primaryKey().defaultRandom(),
         user_id: t.uuid("user_id").references(() => users.id).notNull(),
         hotel_id: t.uuid("hotel_id").references(() => hotels.id).notNull(),
-        booking_id: t.uuid("booking_id").references(() => bookings.id).notNull(),
+        booking_id: t.uuid("booking_id").references(() => bookings.booking_id).notNull(),
         rating: t.decimal("rating", { precision: 2, scale: 1 }).default("0.0").notNull(),
         comment: t.text("comment"),
         created_at: t.timestamp("created_at").defaultNow().notNull(),
