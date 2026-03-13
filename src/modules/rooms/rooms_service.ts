@@ -5,22 +5,29 @@ import { ApiError } from "../../utils/ApiError.js";
 import { createRoomSchema } from "./room_schema.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 
-export async function createRoom(data: z.infer<typeof createRoomSchema>){
+type CreateRoomInput = z.infer<typeof createRoomSchema> & {
+    hotel_id: string;
+}
+
+
+export async function createRoom(data: CreateRoomInput){
     const parsedData = createRoomSchema.safeParse(data);
     if(!parsedData.success){
         throw new ApiError(400, "INVALID_REQUEST");
     }
     try{
+        const hotel_id = data.hotel_id;
         const {room_number, room_type, price_per_night, max_occupancy} = parsedData.data;
         const [newRoom] = await db.insert(rooms)
             .values({
+                hotel_id,
                 room_number,
                 room_type,
-                price_per_night: price_per_night.toString(),
+                price_per_night: String(price_per_night),
                 max_occupancy,
             })
             .returning({
-                id: rooms.room_id,
+                id: rooms.id,
                 hotel_id: rooms.hotel_id,
                 roomNumber: rooms.room_number,
                 roomType: rooms.room_type,

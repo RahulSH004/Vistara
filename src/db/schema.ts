@@ -45,7 +45,7 @@ export const room_types = pgTable(
 export const rooms = pgTable(
     "rooms",
     {
-    room_id: t.uuid("id").primaryKey().defaultRandom(),
+    id: t.uuid("room_id").primaryKey().defaultRandom(),
     hotel_id: t.uuid("hotel_id").references(() => hotels.id).notNull(),
     room_number: t.varchar({length: 20}).notNull(),
     room_type: t.varchar({length: 50}).notNull().references(() => room_types.name),
@@ -66,9 +66,9 @@ export const statusEnum = pgEnum("booking_status", ["pending", "confirmed", "can
 export const bookings = pgTable(
     "bookings",
     {
-    booking_id: t.uuid("id").primaryKey().defaultRandom(),
+    id: t.uuid("booking_id").primaryKey().defaultRandom(),
     user_id: t.uuid("user_id").references(() => users.id).notNull(),
-    room_id: t.uuid("room_id").references(() => rooms.room_id).notNull(),
+    room_id: t.uuid("room_id").references(() => rooms.id).notNull(),
     hotel_id: t.uuid("hotel_id").references(() => hotels.id).notNull(),
     guests: t.integer("guests").notNull(),
     check_in_date: t.date("check_in_date").notNull(),
