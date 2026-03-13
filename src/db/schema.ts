@@ -50,7 +50,7 @@ export const rooms = pgTable(
     room_number: t.varchar({length: 20}).notNull(),
     room_type: t.varchar({length: 50}).notNull().references(() => room_types.name),
     price_per_night: t.decimal("price_per_night", { precision: 10, scale: 2 }).notNull(),
-    is_available: t.boolean("is_available").default(true),
+    max_occupancy: t.integer("max_occupancy").notNull(),
     created_at: t.timestamp("created_at").defaultNow(),
     updated_at: t.timestamp("updated_at").defaultNow(),
     },

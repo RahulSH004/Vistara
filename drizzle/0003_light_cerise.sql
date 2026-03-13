@@ -1,0 +1,1 @@
+ALTER TABLE "rooms" RENAME COLUMN "is_available" TO "max_occupancy";
