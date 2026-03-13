@@ -7,7 +7,7 @@ export async function createHotelMiddleware(req: Request, res: Response, next: N
         console.log(user);
         console.log(user?.role);
         if(!user || user.role !== "admin"){
-            throw new ApiError(401, "UNAUTHORIZED");
+            throw new ApiError(401, "FORBIDDEN");
         }
         next();
     }catch(error){

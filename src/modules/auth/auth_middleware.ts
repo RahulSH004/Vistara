@@ -15,14 +15,14 @@ const ACCESS_TOKEN = process.env.ACCESS_TOKEN_SECRET;
 if (!ACCESS_TOKEN) throw new Error("ACCESS_TOKEN_SECRET is not defined");
 
 export const authmiddleware = async (req: Request, res: Response, nxt: NextFunction) => {
-    try {
-        const token = req.headers['authorization']?.replace("Bearer ", "");
-        if(!token){
-            return res.status(401).json({
-                message: "No token authenticate"
-            })
+    const authHeader = req.headers['authorization'];
+        if(!authHeader || !authHeader.startsWith("Bearer ")){
+            throw new ApiError(401, "UNAUTHORIZED");
         }
-        const decode = jwt.verify(token, ACCESS_TOKEN) as TokenPayload
+        console.log("authHeader", authHeader);
+    try {
+        
+        const decode = jwt.verify(authHeader.replace("Bearer ", ""), ACCESS_TOKEN) as TokenPayload
         const user = await db
             .select()
             .from(users)
@@ -38,7 +38,7 @@ export const authmiddleware = async (req: Request, res: Response, nxt: NextFunct
         nxt();
         
     } catch (error) {
-        nxt(new ApiError(401,"Invalid access token"))
-        
+        console.error("JWT verify error:", error);
+        return nxt(new ApiError(401, "Invalid access token"));
     }
 }

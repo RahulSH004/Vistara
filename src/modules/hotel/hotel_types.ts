@@ -1,4 +1,4 @@
-import {string, z} from "zod";
+import {z} from "zod";
 
 export const createhotelschema = z.object({
     name: z.string().min(2, "mininum 2 words"),

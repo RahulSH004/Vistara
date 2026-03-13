@@ -9,12 +9,11 @@ import { ApiResponse } from "../../utils/ApiResponse.js";
 
 export async function createHotel(data: z.infer <typeof createhotelschema>, user: Request['user']){
 
+    const parsedData = createhotelschema.safeParse(data);
+    if(!parsedData.success){
+        throw new ApiError(400, "INVALID_REQUEST");
+    }
     try {
-        const parsedData = createhotelschema.safeParse(data);
-        if(!parsedData.success){
-            throw new ApiError(400, "INVALID_REQUEST");
-        }
-        
         const owner_id = user?.id as string;
         const {name, description, city, country, amenities} = parsedData.data;
         const [newHotel] = await db.insert(hotels)

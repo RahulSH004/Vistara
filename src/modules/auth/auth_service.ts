@@ -9,8 +9,8 @@ import { z } from "zod";
 import { ApiError } from '../../utils/ApiError.js';
 
 
-const  ACCESS_TOKEN = process.env. ACCESS_TOKEN_SECRET as string;
-const  REFRESH_TOKEN = process.env.  REFRESH_TOKEN_SECRET as string;
+const  ACCESS_TOKEN = process.env.ACCESS_TOKEN_SECRET as string;
+const  REFRESH_TOKEN = process.env.REFRESH_TOKEN_SECRET as string;
 
 async function generateAccessToken(userId: string) {
     const accesstoken = jwt.sign({userId},  ACCESS_TOKEN, {expiresIn: "30m"});
@@ -20,7 +20,10 @@ async function generateAccessToken(userId: string) {
         userId,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
     })
+    console.log("accesstoken", accesstoken);
+    console.log("refreshtoken", refreshtoken);
     return {accesstoken, refreshtoken};
+    
 }
 
 export async function registerUser(data: z.infer<typeof registerUserSchema>){
