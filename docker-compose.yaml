@@ -17,3 +17,9 @@ services:
 
 volumes:
   hotel_booking_platform_data:
+
+adminer:
+  image: adminer
+  restart: always
+  ports:
+    - "8080:8080"
