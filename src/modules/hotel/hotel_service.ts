@@ -45,3 +45,7 @@ export async function createHotel(data: z.infer <typeof createhotelschema>, user
         throw new ApiError(500, "INTERNAL_SERVER_ERROR");
     }
 }
+
+export async function getHotels(){
+    
+}

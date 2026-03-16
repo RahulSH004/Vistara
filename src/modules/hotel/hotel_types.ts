@@ -7,3 +7,8 @@ export const createhotelschema = z.object({
     country: z.string().min(1, "country is required"),
     amenities: z.array(z.string()).nonempty("amenities are required"),
 })
+
+export const filterschema = z.object({
+    city:  z.string().optional()
+    
+})

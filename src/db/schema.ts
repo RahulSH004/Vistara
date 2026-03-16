@@ -45,10 +45,10 @@ export const room_types = pgTable(
 export const rooms = pgTable(
     "rooms",
     {
-    id: t.uuid("room_id").primaryKey().defaultRandom(),
+    id: t.uuid("id").primaryKey().defaultRandom(),
     hotel_id: t.uuid("hotel_id").references(() => hotels.id).notNull(),
-    room_number: t.varchar({length: 20}).notNull(),
-    room_type: t.varchar({length: 50}).notNull().references(() => room_types.name),
+    room_number: t.varchar("room_number",{length: 20}).notNull(),
+    room_type: t.uuid("room_type_id").notNull().references(() => room_types.name),
     price_per_night: t.decimal("price_per_night", { precision: 10, scale: 2 }).notNull(),
     max_occupancy: t.integer("max_occupancy").notNull(),
     created_at: t.timestamp("created_at").defaultNow(),
@@ -94,7 +94,7 @@ export const reviews = pgTable(
         id: t.uuid("id").primaryKey().defaultRandom(),
         user_id: t.uuid("user_id").references(() => users.id).notNull(),
         hotel_id: t.uuid("hotel_id").references(() => hotels.id).notNull(),
-        booking_id: t.uuid("booking_id").references(() => bookings.booking_id).notNull(),
+        booking_id: t.uuid("booking_id").references(() => bookings.id).notNull(),
         rating: t.decimal("rating", { precision: 2, scale: 1 }).default("0.0").notNull(),
         comment: t.text("comment"),
         created_at: t.timestamp("created_at").defaultNow().notNull(),
