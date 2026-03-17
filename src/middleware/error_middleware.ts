@@ -9,6 +9,7 @@ export function errorHandler(err: unknown, req: Request, res: Response, next: Ne
             error: err.message,
         });
     }
+    console.error("Unexpected error:", err) 
     return res.status(500).json({
         success: false,
         data: null,

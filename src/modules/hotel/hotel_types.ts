@@ -11,7 +11,7 @@ export const createhotelschema = z.object({
 export const filterschema = z.object({
     city:  z.string().optional(),
     country: z.string().optional(),
-    minrating: z.coerce.number().optional(),
-    minprice: z.coerce.number().optional(),
-    maxprice: z.coerce.number().optional()
+    minrating: z.coerce.number().min(0).max(10).optional(),
+    minprice: z.coerce.number().min(0).optional(),
+    maxprice: z.coerce.number().min(0).optional()
 })

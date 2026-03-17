@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 
 app.use("/api/auth", authRouter);
-app.use("/api/hotel", hotelRouter);
+app.use("/api/hotels", hotelRouter);
 app.use("/api", roomrouter);
 app.use(errorHandler);
 app.listen(PORT ,() => {
