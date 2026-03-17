@@ -9,6 +9,9 @@ export const createhotelschema = z.object({
 })
 
 export const filterschema = z.object({
-    city:  z.string().optional()
-    
+    city:  z.string().optional(),
+    country: z.string().optional(),
+    minrating: z.coerce.number().optional(),
+    minprice: z.coerce.number().optional(),
+    maxprice: z.coerce.number().optional()
 })
