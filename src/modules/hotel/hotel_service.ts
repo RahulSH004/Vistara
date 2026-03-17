@@ -1,21 +1,18 @@
 import z from "zod"
 import {db} from "../../db/connection.js"
-import { createhotelschema } from "./hotel_types.js"
+import { createhotelschema, filterschema } from "./hotel_types.js"
 import { ApiError } from "../../utils/ApiError.js";
 import { Request } from "express";
-import { hotels } from "../../db/schema.js";
+import { hotels, rooms } from "../../db/schema.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
+import { and, eq, gte, ilike, lte } from "drizzle-orm";
 
 
 export async function createHotel(data: z.infer <typeof createhotelschema>, user: Request['user']){
 
-    const parsedData = createhotelschema.safeParse(data);
-    if(!parsedData.success){
-        throw new ApiError(400, "INVALID_REQUEST");
-    }
     try {
         const owner_id = user?.id as string;
-        const {name, description, city, country, amenities} = parsedData.data;
+        const {name, description, city, country, amenities} = data;
         const [newHotel] = await db.insert(hotels)
             .values({
                 owner_id,
@@ -42,10 +39,51 @@ export async function createHotel(data: z.infer <typeof createhotelschema>, user
         }
         return new ApiResponse(newHotel, null);
     } catch (error) {
+        console.error("createHotel error:", error)
         throw new ApiError(500, "INTERNAL_SERVER_ERROR");
     }
 }
 
-export async function getHotels(){
+type Filters  = z.infer<typeof filterschema>
+
+export async function getHotels(filters: Filters){
+
+    try {
+
+        const hotelconditions = [];
+        const roomconditions = [];
+
+        if (filters.city) hotelconditions.push(ilike(hotels.city, `%${filters.city}%`));
+        if (filters.country) hotelconditions.push(ilike(hotels.country, `%${filters.country}%`));
+        if (filters.minrating !== undefined) hotelconditions.push(gte(hotels.rating, String(filters.minrating)));
+
+        //room-level price filter
+        if (filters.minprice !== undefined) roomconditions.push(gte(rooms.price_per_night, String(filters.minprice)));
+        if (filters.maxprice !== undefined) roomconditions.push(lte(rooms.price_per_night, String(filters.maxprice)));
+
+
+        const result = roomconditions.length > 0
+            ? await db.selectDistinct({
+                id: hotels.id,
+                name: hotels.name,
+                city: hotels.city,
+                country: hotels.country,
+                rating: hotels.rating,
+                total_reviews: hotels.total_reviews,
+            })
+                .from(hotels)
+                .$dynamic()
+                .innerJoin(rooms, eq(rooms.hotel_id, hotels.id))
+                .where(and(...hotelconditions, ...roomconditions))
+
+            : await db.select().from(hotels)
+                .$dynamic()
+                .where(and(...hotelconditions))
+
+        return result;
+    }catch(error){
+        console.error("getHotel error:", error)
+        throw new ApiError(500, "INTERNAL_SERVER_ERROR")
+    }
     
 }
