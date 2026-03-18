@@ -17,15 +17,15 @@ export async function createRoom(data: CreateRoomInput){
             .values({
                 hotel_id,
                 room_number,
-                room_type,
-                price_per_night: String(price_per_night),
+                room_type_id: room_type,
+                price_per_night,
                 max_occupancy,
             })
             .returning({
                 id: rooms.id,
                 hotel_id: rooms.hotel_id,
                 roomNumber: rooms.room_number,
-                roomType: rooms.room_type,
+                roomType: rooms.room_type_id,
                 price_per_night: rooms.price_per_night,
                 maxOccupancy: rooms.max_occupancy,
             });

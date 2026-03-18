@@ -34,21 +34,13 @@ export const hotels = pgTable(
     }
 )
 
-export const room_types = pgTable(
-    "room_types",
-    {
-    id: t.uuid("id").primaryKey().defaultRandom(),
-    name: t.varchar("name",{length: 50}).notNull().unique(),
-    }
-)
-
 export const rooms = pgTable(
     "rooms",
     {
     id: t.uuid("id").primaryKey().defaultRandom(),
     hotel_id: t.uuid("hotel_id").references(() => hotels.id).notNull(),
     room_number: t.varchar("room_number",{length: 20}).notNull(),
-    room_type: t.uuid("room_type_id").notNull().references(() => room_types.name),
+    room_type: t.varchar("room_type", {length: 20}).notNull(),
     price_per_night: t.decimal("price_per_night", { precision: 10, scale: 2 }).notNull(),
     max_occupancy: t.integer("max_occupancy").notNull(),
     created_at: t.timestamp("created_at").defaultNow(),
