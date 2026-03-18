@@ -13,7 +13,7 @@ export async function requireHotelowner(
 ){
     try {
         const user = req.user;
-        const hotelId = req.params.hotelId || req.body.hotel_id;
+        const hotelId = req.params.hotel_id || req.body.hotel_id;
 
         if(!user) throw new ApiError(401, "Unauthenticated");
         if(!hotelId) throw new ApiError(400, "Hotel_ID Required");
@@ -24,8 +24,11 @@ export async function requireHotelowner(
             .where(eq(hotels.id, hotelId))
             .limit(1);
         
-        if(!hotel || hotel.ownerId !== user.id){
-            throw new ApiError(403, "Not Hotel Ownwer")
+        if(!hotel){
+            throw new ApiError(404, "Hotel not found");
+        }
+        if(hotel.ownerId !== user.id){
+            throw new ApiError(403, "Not Hotel Owner")
         }
         next();
     }catch(error){

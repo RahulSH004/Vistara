@@ -9,15 +9,10 @@ type CreateRoomInput = z.infer<typeof createRoomSchema> & {
     hotel_id: string;
 }
 
-
 export async function createRoom(data: CreateRoomInput){
-    const parsedData = createRoomSchema.safeParse(data);
-    if(!parsedData.success){
-        throw new ApiError(400, "INVALID_REQUEST");
-    }
     try{
         const hotel_id = data.hotel_id;
-        const {room_number, room_type, price_per_night, max_occupancy} = parsedData.data;
+        const {room_number, room_type, price_per_night, max_occupancy} = data;
         const [newRoom] = await db.insert(rooms)
             .values({
                 hotel_id,
@@ -39,6 +34,8 @@ export async function createRoom(data: CreateRoomInput){
         }
         return new ApiResponse(newRoom,null);
     }catch(error){
+        console.error("createRoom error:", error);
+        if(error instanceof ApiError) throw error;
         throw new ApiError(500, "Internal Server Error");
     }
 }

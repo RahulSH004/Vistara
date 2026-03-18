@@ -6,7 +6,7 @@ import { requireHotelowner } from "./rooms_middleware.js";
 
 const roomrouter = Router()
 
-roomrouter.post("hotels/:hotel_id/rooms",
+roomrouter.post("/hotels/:hotel_id/rooms",
     authmiddleware,
     requireRole('admin'),
     requireHotelowner,
