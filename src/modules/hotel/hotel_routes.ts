@@ -8,6 +8,6 @@ const hotelRouter = Router();
 
 hotelRouter.post("/create-Hotels", authmiddleware, requireRole("admin"), createHotelController);
 
-hotelRouter.get("/:hotel_id", authmiddleware, getHotelcontroller);
+hotelRouter.get("/", authmiddleware, getHotelcontroller);
 
 export default hotelRouter;

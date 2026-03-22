@@ -6,3 +6,8 @@ export const createRoomSchema = z.object({
     price_per_night: z.number().min(1, "Price per night is required").positive(),
     max_occupancy: z.number().min(1, "Max occupancy is required").int().positive(),
 })
+
+export const filterschema = z.object({
+    minprice: z.coerce.number().min(0).optional(),
+    maxprice: z.coerce.number().min(0).optional()
+})

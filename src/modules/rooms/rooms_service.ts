@@ -1,9 +1,11 @@
 import { db } from "../../db/connection.js";
 import {z} from "zod";
-import { rooms } from "../../db/schema.js";
+import { Request, Response } from "express";
+import { hotels, rooms } from "../../db/schema.js";
 import { ApiError } from "../../utils/ApiError.js";
-import { createRoomSchema } from "./room_schema.js";
+import { createRoomSchema, filterschema } from "./room_schema.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
+import { and, eq, gte, lte } from "drizzle-orm";
 
 type CreateRoomInput = z.infer<typeof createRoomSchema> & {
     hotel_id: string;
@@ -36,6 +38,34 @@ export async function createRoom(data: CreateRoomInput){
     }catch(error){
         console.error("createRoom error:", error);
         if(error instanceof ApiError) throw error;
+        throw new ApiError(500, "Internal Server Error");
+    }
+}
+
+type Filters = z.infer<typeof filterschema>
+
+export async function gethotelwithrooms(filters: Filters, hotel_id: string){
+    
+    try {
+        const [hotel] = await db.select()
+            .from(hotels)
+            .where(eq(hotels.id, hotel_id))
+            .limit(1)
+    
+        if(!hotel)
+            throw new ApiError(404, "Page Not Found")
+        const conditions = [eq(rooms.hotel_id, hotel_id)]
+    
+        if (filters.minprice !== undefined) conditions.push(gte(rooms.price_per_night, String(filters.minprice)));
+        if (filters.maxprice !== undefined) conditions.push(lte(rooms.price_per_night, String(filters.maxprice)));
+    
+        const roomsfilter = await db.select()
+            .from(rooms)
+            .where(and(...conditions))
+    
+        return {hotel, rooms: roomsfilter}
+    } catch (error) {
+        console.error("error",error)
         throw new ApiError(500, "Internal Server Error");
     }
 }

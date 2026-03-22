@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createRoomcontroller } from "./rooms_controller.js";
+import { createRoomcontroller, gethotelwithroomscontroller } from "./rooms_controller.js";
 import { authmiddleware } from "../auth/auth_middleware.js";
 import { requireRole } from "../../middleware/role_middleware.js";
 import { requireHotelowner } from "./rooms_middleware.js";
@@ -12,5 +12,10 @@ roomrouter.post("/hotels/:hotel_id/rooms",
     requireHotelowner,
     createRoomcontroller
 );
+
+roomrouter.get("/hotels/:hotel_id",
+    authmiddleware,
+    gethotelwithroomscontroller,
+)
 
 export default roomrouter;

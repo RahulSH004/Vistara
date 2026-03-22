@@ -23,10 +23,12 @@ export async function createHotelController(req: Request, res: Response){
 }
 export async function getHotelcontroller(req: Request, res: Response, next: NextFunction){
     try {
+        
         const parsed = filterschema.safeParse(req.query);
         if(!parsed.success){
             throw new ApiError(400, parsed.error.message);
         }
+
         const data = await getHotels(parsed.data)
         return res.status(200).json(
             new ApiResponse(data,null)

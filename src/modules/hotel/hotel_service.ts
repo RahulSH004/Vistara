@@ -51,7 +51,6 @@ export async function getHotels(filters: Filters){
     try {
 
         const hotelconditions = [];
-
         if (filters.city) hotelconditions.push(ilike(hotels.city, `%${filters.city}%`));
         if (filters.country) hotelconditions.push(ilike(hotels.country, `%${filters.country}%`));
         if (filters.minrating !== undefined) hotelconditions.push(gte(hotels.rating, String(filters.minrating)));
@@ -61,7 +60,7 @@ export async function getHotels(filters: Filters){
             .$dynamic()
             .where(and(...hotelconditions))
 
-        return hotelconditions;
+        return hotelconditions.length;
     }catch(error){
         console.error("getHotel error:", error)
         throw new ApiError(500, "INTERNAL_SERVER_ERROR")
