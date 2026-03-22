@@ -17,7 +17,7 @@ export async function createRoom(data: CreateRoomInput){
             .values({
                 hotel_id,
                 room_number,
-                room_type_id: room_type,
+                room_type,
                 price_per_night,
                 max_occupancy,
             })
@@ -25,7 +25,7 @@ export async function createRoom(data: CreateRoomInput){
                 id: rooms.id,
                 hotel_id: rooms.hotel_id,
                 roomNumber: rooms.room_number,
-                roomType: rooms.room_type_id,
+                roomType: rooms.room_type,
                 price_per_night: rooms.price_per_night,
                 maxOccupancy: rooms.max_occupancy,
             });

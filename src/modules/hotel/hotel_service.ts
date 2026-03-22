@@ -51,36 +51,17 @@ export async function getHotels(filters: Filters){
     try {
 
         const hotelconditions = [];
-        const roomconditions = [];
 
         if (filters.city) hotelconditions.push(ilike(hotels.city, `%${filters.city}%`));
         if (filters.country) hotelconditions.push(ilike(hotels.country, `%${filters.country}%`));
         if (filters.minrating !== undefined) hotelconditions.push(gte(hotels.rating, String(filters.minrating)));
 
-        //room-level price filter
-        if (filters.minprice !== undefined) roomconditions.push(gte(rooms.price_per_night, String(filters.minprice)));
-        if (filters.maxprice !== undefined) roomconditions.push(lte(rooms.price_per_night, String(filters.maxprice)));
+        
+        await db.select().from(hotels)
+            .$dynamic()
+            .where(and(...hotelconditions))
 
-
-        const result = roomconditions.length > 0
-            ? await db.selectDistinct({
-                id: hotels.id,
-                name: hotels.name,
-                city: hotels.city,
-                country: hotels.country,
-                rating: hotels.rating,
-                total_reviews: hotels.total_reviews,
-            })
-                .from(hotels)
-                .$dynamic()
-                .innerJoin(rooms, eq(rooms.hotel_id, hotels.id))
-                .where(and(...hotelconditions, ...roomconditions))
-
-            : await db.select().from(hotels)
-                .$dynamic()
-                .where(and(...hotelconditions))
-
-        return result;
+        return hotelconditions;
     }catch(error){
         console.error("getHotel error:", error)
         throw new ApiError(500, "INTERNAL_SERVER_ERROR")
