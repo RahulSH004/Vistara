@@ -22,7 +22,7 @@ export async function createRoomcontroller(req:Request, res: Response, next: Nex
 }
 export async function gethotelwithroomscontroller(req: Request, res: Response, next: NextFunction){
     try {
-        const hotel_id  = req.params.hotel_id
+        const hotel_id  = req.params.hotel_id as string;
         if(!hotel_id){
             throw new ApiError(404, "Invaild hotel_id")
         }
@@ -30,7 +30,7 @@ export async function gethotelwithroomscontroller(req: Request, res: Response, n
         if(!parsed.success){
             throw new ApiError(400, parsed.error.message)
         }
-        const result = await gethotelwithrooms(parsed.data)
+        const result = await gethotelwithrooms(parsed.data, hotel_id)
         return res.status(200).json(
             new ApiResponse(result,null)
         )
