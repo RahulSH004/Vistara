@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createBookingController, getBookingsController } from "./booking_controller.js";
+import { cancelBookingController, createBookingController, getBookingsController } from "./booking_controller.js";
 import { authmiddleware } from "../auth/auth_middleware.js";
 import { requireRole } from "../../middleware/role_middleware.js";
 
@@ -15,5 +15,10 @@ bookingrouter.get("/bookings",
     authmiddleware,
     requireRole('customer'),
     getBookingsController
+);
+bookingrouter.patch("/bookings/:bookingId/cancel",
+    authmiddleware,
+    requireRole('customer'),
+    cancelBookingController
 );
 export default bookingrouter;
