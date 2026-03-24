@@ -1,8 +1,8 @@
 import z from "zod"
 import { bookingschema } from "./booking_schema.js"
-import { bookings, rooms } from "../../db/schema.js"
+import { bookings, hotels, rooms } from "../../db/schema.js"
 import { db } from "../../db/connection.js";
-import { eq, and, lt, gt, lte, ne, gte } from "drizzle-orm";
+import { eq, and, lt, gt, lte, ne, gte, desc } from "drizzle-orm";
 import { ApiError } from "../../utils/ApiError.js";
 
 type data = z.infer<typeof bookingschema>
@@ -69,4 +69,27 @@ export async function createbooking(data: data, user_id: string){
         })
 
     return booking;
+}
+
+export async function getbookings(user_id: string){
+    const bookingsdata = await db.select({
+        id: bookings.id,
+        roomId: bookings.room_id,
+        hotelId: bookings.hotel_id,
+        hotelName: hotels.name,
+        roomNumber: rooms.room_number,
+        roomType: rooms.room_type,
+        checkInDate: bookings.check_in_date,
+        checkOutDate: bookings.check_out_date,
+        guests: bookings.guests,
+        totalprice: bookings.total_price,
+        status: bookings.status,
+        bookingDate: bookings.booking_date,
+    })
+    .from(bookings)
+    .leftJoin(rooms, eq(bookings.room_id, rooms.id))
+    .leftJoin(hotels, eq(bookings.hotel_id, hotels.id))
+    .where(eq(bookings.user_id, user_id))
+    .orderBy(desc(bookings.booking_date))
+    return bookingsdata;
 }

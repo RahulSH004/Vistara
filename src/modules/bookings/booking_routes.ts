@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createBookingController } from "./booking_controller.js";
+import { createBookingController, getBookingsController } from "./booking_controller.js";
 import { authmiddleware } from "../auth/auth_middleware.js";
 import { requireRole } from "../../middleware/role_middleware.js";
 
@@ -11,4 +11,9 @@ bookingrouter.post("/bookings",
     createBookingController
 );
 
+bookingrouter.get("/bookings",
+    authmiddleware,
+    requireRole('customer'),
+    getBookingsController
+);
 export default bookingrouter;
