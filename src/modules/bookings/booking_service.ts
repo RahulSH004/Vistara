@@ -24,6 +24,9 @@ export async function createbooking(data: data, user_id: string){
     if(checkOutDate <= checkInDate){
         throw new ApiError(400, "checkout date must be after the checkIn")
     }
+    if(guests > room.max_occupancy){
+        throw new ApiError(400, `Invalid Capacity, Max Occupancy is ${room.max_occupancy}`)
+    }
     const checkInDateStr = checkInDate.toISOString().slice(0, 10);
     const checkOutDateStr = checkOutDate.toISOString().slice(0, 10);
     const overlapquery = await db.select()

@@ -5,5 +5,5 @@ export const bookingschema = z.object({
     roomId: z.string(),
     checkInDate : z.coerce.date(),
     checkOutDate: z.coerce.date(),
-    guests: z.number().positive('only postive value')
+    guests: z.number().int().min(1).max(4)
 }) 
