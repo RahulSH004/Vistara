@@ -8,15 +8,7 @@ import { ApiError } from '../../utils/ApiError.js';
 type reviewInput = z.infer<typeof reviewSchema>
 
 export async function postreviews(data: reviewInput, user_id: string){
-    //1. Can only review after check-out date has passed and booking status is confirmed
-    //2. update rating and totalRatings on success
-    //3. handle all edge case 
-        //a. not your booking
-        //b. already reviewd 
-        //c. checkout date do not pass or booking cancelled
-        //d. booking not found
-
-    const {bookingId,review, comment} = data;
+    const {bookingId,rating, comment} = data;
 
     const [checkbooking] = await db.select()
         .from(bookings)
@@ -49,7 +41,7 @@ export async function postreviews(data: reviewInput, user_id: string){
     const currentRating = parseFloat(hotel?.rating ?? '0')
     const currentTotal = hotel?.total_reviews ?? 0
 
-    const new_rating = ((currentRating * currentTotal) + review) / (currentTotal + 1)
+    const new_rating = ((currentRating * currentTotal) + rating) / (currentTotal + 1)
     const newTotalReviews = currentTotal + 1
 
     
@@ -58,7 +50,7 @@ export async function postreviews(data: reviewInput, user_id: string){
             booking_id: checkbooking.id,
             hotel_id: checkbooking.hotel_id,
             user_id,
-            review,
+            rating,
             comment,
         }).returning({
             id: reviews.id,

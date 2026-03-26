@@ -6,6 +6,7 @@ import hotelRouter from './modules/hotel/hotel_routes.js';
 import { errorHandler } from './middleware/error_middleware.js';
 import roomrouter from './modules/rooms/rooms_routes.js';
 import bookingrouter from './modules/bookings/booking_routes.js';
+import reviewRouter from './modules/review/review_routes.js';
 const PORT = process.env.PORT;
 const app = express();
 
@@ -15,6 +16,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/hotels", hotelRouter);
 app.use("/api", roomrouter);
 app.use("/api", bookingrouter);
+app.use("/api", reviewRouter)
 app.use(errorHandler);
 app.listen(PORT ,() => {
 
