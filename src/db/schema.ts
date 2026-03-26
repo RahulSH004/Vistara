@@ -27,8 +27,8 @@ export const hotels = pgTable(
     city: t.varchar("city", { length: 100 }).notNull(),
     country: t.varchar("country", { length: 100 }).notNull(),
     amenities: t.jsonb("amenities").default([]),
-    rating: t.decimal("rating", { precision: 2, scale: 1 }).default("0.0"),
-    total_reviews: t.integer("total_reviews").default(0),
+    rating: t.decimal("rating", { precision: 2, scale: 1 }).default("0").notNull(),
+    total_reviews: t.integer("total_reviews").default(0).notNull(),
     created_at: t.timestamp("created_at").defaultNow(),
     updated_at: t.timestamp("updated_at").defaultNow(),
     }
