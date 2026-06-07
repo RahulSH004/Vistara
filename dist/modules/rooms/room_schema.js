@@ -1,0 +1,12 @@
+import { z } from "zod";
+export const createRoomSchema = z.object({
+    room_number: z.string().min(1, "Room number is required"),
+    room_type: z.string().min(1, "Room type is required"),
+    price_per_night: z.number().min(1, "Price per night is required").positive(),
+    max_occupancy: z.number().min(1, "Max occupancy is required").int().positive(),
+});
+export const filterschema = z.object({
+    minprice: z.coerce.number().min(0).optional(),
+    maxprice: z.coerce.number().min(0).optional()
+});
+//# sourceMappingURL=room_schema.js.map
