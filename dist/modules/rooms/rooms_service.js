@@ -9,11 +9,11 @@ export async function createRoom(data) {
         const { room_number, room_type, price_per_night, max_occupancy } = data;
         const [newRoom] = await db.insert(rooms)
             .values({
-            hotel_id,
-            room_number,
-            room_type,
-            price_per_night,
-            max_occupancy,
+            hotel_id: String(hotel_id),
+            room_number: String(room_number),
+            room_type: String(room_type),
+            price_per_night: String(price_per_night),
+            max_occupancy: Number(max_occupancy),
         })
             .returning({
             id: rooms.id,

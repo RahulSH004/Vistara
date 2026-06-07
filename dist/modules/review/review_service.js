@@ -34,10 +34,10 @@ export async function postreviews(data, user_id) {
     const newTotalReviews = currentTotal + 1;
     const result = await db.transaction(async (tx) => {
         const [insertReview] = await tx.insert(reviews).values({
-            booking_id: checkbooking.id,
-            hotel_id: checkbooking.hotel_id,
+            booking_id: String(checkbooking.id),
+            hotel_id: String(checkbooking.hotel_id),
             user_id,
-            rating,
+            rating: String(rating),
             comment,
         }).returning({
             id: reviews.id,
