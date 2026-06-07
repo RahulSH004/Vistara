@@ -94,19 +94,6 @@ npm run build
 npm start
 ```
 
-## 📚 API Endpoints
-
-### Authentication (`/api/auth`)
-
-### Hotels (`/api/hotels`)
-
-### Rooms (`/api/rooms`)
-
-### Bookings (`/api/bookings`)
-
-### Reviews (`/api/reviews`)
-
-
 ## 🏗️ Project Structure
 
 ```
@@ -125,15 +112,6 @@ src/
 ├── utils/                 # Helper utilities
 └── index.ts               # Server entry point
 ```
-
-## 🔐 Authentication
-
-The API uses **JWT (JSON Web Tokens)** for authentication:
-
-1. User registers or logs in
-2. Server returns JWT token
-3. Include token in request headers: `Authorization: Bearer <token>`
-4. Admin endpoints require `admin` role
 
 ## 🗄️ Database
 
